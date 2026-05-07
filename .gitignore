@@ -1,0 +1,16 @@
+# OS Junk
+.DS_Store
+
+# Node / Next.js
+node_modules/
+.next/
+
+# Python / FastAPI
+__pycache__/
+*.pyc
+venv/
+backend/venv/
+
+# Security (CRITICAL)
+.env
+backend/.env
