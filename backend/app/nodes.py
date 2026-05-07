@@ -7,7 +7,7 @@ from .state import NexusState
 load_dotenv()
 
 # Initialize Gemini
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.2)
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-latest", temperature=0.2)
 
 def sales_agent(state: NexusState):
     prompt = f"""
