@@ -3,11 +3,19 @@ from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from .state import NexusState
 
-# Load the API key from your .env file
-load_dotenv()
+# The magic word 'override=True' forces Python to ignore cached terminal keys 
+# and ONLY use what is currently saved in the .env file.
+load_dotenv(override=True)
 
-# Initialize Gemini
-llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0.2)
+# Pull the key securely from the environment
+api_key = os.getenv("GEMINI_API_KEY")
+
+# Initialize Gemini 2.0 Flash
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.0-flash", 
+    temperature=0.2,
+    api_key=api_key
+)
 
 def sales_agent(state: NexusState):
     prompt = f"""
