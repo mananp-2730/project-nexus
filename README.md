@@ -12,3 +12,8 @@ This backend is powered by **LangGraph** for state management and agent orchestr
 * **The Sales Agent:** Optimized to satisfy the client, pitch ambitious features, and close the deal.
 * **The Engineering Agent:** Optimized for technical skepticism, budget reality checks, and feasibility pushback.
 * **The Director:** LangGraph nodes and edges that force a sequential, structured debate rather than a chaotic AI generation.
+
+## Tech Stack
+* **Backend:** Python, FastAPI, Uvicorn
+* **AI Orchestration:** LangGraph, LangChain
+* **LLM Engine:** Llama 3.3 70B (via Groq API)
