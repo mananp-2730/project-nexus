@@ -5,3 +5,5 @@ Project Nexus is a multi-agent AI orchestrator designed to solve a classic busin
 By utilizing a state-graph architecture, Nexus creates an automated "War Room" where an AI Sales Agent and an AI Engineering Agent debate client briefs in real-time. It translates vague, ambitious sales requirements into structured, technically feasible constraints before a human Product Manager ever has to step in.
 
 ## The Architecture (Phase 1)
+
+This backend is powered by **LangGraph** for state management and agent orchestration, utilizing Meta's **Llama 3.3 70B** model (via Groq) for lightning-fast, highly intelligent inference.
