@@ -1,18 +1,17 @@
 import os
 from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from .state import NexusState
 
-# The magic word 'override=True' forces Python to ignore cached terminal keys 
-# and ONLY use what is currently saved in the .env file.
+# Force Python to read the .env file fresh
 load_dotenv(override=True)
 
-# Pull the key securely from the environment
-api_key = os.getenv("GEMINI_API_KEY")
+# Pull the Groq key securely
+api_key = os.getenv("GROQ_API_KEY")
 
-# Initialize Gemini 2.0 Flash
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash", 
+# Initialize Groq with Meta's Llama 3 (70 Billion Parameters)
+llm = ChatGroq(
+    model="llama3-70b-8192", 
     temperature=0.2,
     api_key=api_key
 )
