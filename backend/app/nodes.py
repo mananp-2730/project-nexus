@@ -11,7 +11,7 @@ api_key = os.getenv("GROQ_API_KEY")
 
 # Initialize Groq with Meta's Llama 3 (70 Billion Parameters)
 llm = ChatGroq(
-    model="llama3-70b-8192", 
+    model="llama-3.3-70b-versatile", 
     temperature=0.2,
     api_key=api_key
 )
