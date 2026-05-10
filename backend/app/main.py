@@ -1,10 +1,19 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from .engine import nexus_app
 
 app = FastAPI(title="Project Nexus API")
 
-# This defines what information we expect from the user to start a project
+# Add CORS middleware to allow the Next.js frontend to talk to this backend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"], # Next.js runs here
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 class ProjectRequest(BaseModel):
     client_brief: str
 
@@ -14,7 +23,6 @@ def read_root():
 
 @app.post("/api/start-debate")
 def start_debate(request: ProjectRequest):
-    # 1. Set up the initial Whiteboard (State)
     initial_state = {
         "client_brief": request.client_brief,
         "budget": 10000,           
@@ -28,8 +36,5 @@ def start_debate(request: ProjectRequest):
         "loop_count": 0
     }
     
-    # 2. Run the LangGraph Engine
     final_state = nexus_app.invoke(initial_state)
-    
-    # 3. Return the conversation log
     return {"debate_log": final_state["debate_log"]}
