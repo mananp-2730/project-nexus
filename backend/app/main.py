@@ -5,17 +5,19 @@ from .engine import nexus_app
 
 app = FastAPI(title="Project Nexus API")
 
-# Add CORS middleware to allow the Next.js frontend to talk to this backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"], # Next.js runs here
+    allow_origins=["http://localhost:3000"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# 1. Update the expected request from the frontend
 class ProjectRequest(BaseModel):
     client_brief: str
+    budget: int            # NEW
+    timeline_weeks: int    # NEW
 
 @app.get("/")
 def read_root():
@@ -23,10 +25,11 @@ def read_root():
 
 @app.post("/api/start-debate")
 def start_debate(request: ProjectRequest):
+    # 2. Map the user's inputs directly into the LangGraph state
     initial_state = {
         "client_brief": request.client_brief,
-        "budget": 10000,           
-        "timeline_weeks": 4,       
+        "budget": request.budget,                  # Updated!
+        "timeline_weeks": request.timeline_weeks,  # Updated!
         "tech_stack": [],
         "features": [{"feature": "Core App", "priority": "High", "status": "Proposed"}],
         "debate_log": ["SYSTEM: War Room Initialized."],
