@@ -39,3 +39,18 @@ def engineering_agent(state: NexusState):
     """
     response = llm.invoke(prompt)
     return {"debate_log": [f"Engineering: {response.content}"]}
+
+def pm_agent(state: NexusState):
+    prompt = f"""
+    You are the pragmatic Product Manager.
+    Client Brief: {state['client_brief']}
+    Current Budget: ${state['budget']}
+    
+    Here is what Sales and Engineering just argued about:
+    {state['debate_log']}
+    
+    Goal: Step in and make a final, realistic compromise. Tell Sales what they need to cut, and tell Engineering what they must build. 
+    Keep your response to 3 clear sentences.
+    """
+    response = llm.invoke(prompt)
+    return {"debate_log": [f"Product Manager: {response.content}"]}
