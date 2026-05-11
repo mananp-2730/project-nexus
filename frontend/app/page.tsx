@@ -137,7 +137,7 @@ export default function Home() {
                 }
                 if (message.startsWith("Engineering:")) {
                   colorClass = "text-red-400 border-red-900/50 bg-red-900/10";
-                  badge = "⚙️ Engineering";
+                  badge = "Engineering";
                   message = message.replace("Engineering: ", "");
                 }
                 if (message.startsWith("Product Manager:")) {
