@@ -18,10 +18,11 @@ export default function Home() {
     if (!brief) return;
     setLoading(true);
     setDebate([]); 
-    setVisibleDebate([]); // Clear the screen
+    setVisibleDebate([]); 
 
     try {
-      const response = await fetch("https://project-nexus-api-1tly.onrender.com", {
+      // Make sure this URL is your exact Render URL!
+      const response = await fetch("https://project-nexus-api-1tly.onrender.com/api/start-debate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -32,16 +33,24 @@ export default function Home() {
       });
 
       const data = await response.json();
-      setDebate(data.debate_log); // Save the full script from Python
-      setIsTyping(true);          // Tell the UI to start "playing" the script
+
+      // THE SAFETY NET: Check if Python actually gave us a debate log!
+      if (data.debate_log) {
+        setDebate(data.debate_log);
+        setIsTyping(true);
+      } else {
+        // If Python sent an error, print it safely to the screen instead of crashing
+        setVisibleDebate([`SYSTEM ERROR: Backend returned -> ${JSON.stringify(data)}`]);
+      }
+      
     } catch (error) {
       console.error("Error connecting to War Room:", error);
-      setVisibleDebate(["SYSTEM ERROR: Could not connect to the Python backend."]);
+      setVisibleDebate(["SYSTEM ERROR: Could not connect to the Python backend. It might be waking up!"]);
     }
 
     setLoading(false);
   };
-
+  
   // THE MAGIC MOVIE DIRECTOR: This effect runs every time 'visibleDebate' changes
   useEffect(() => {
     // If we have messages to show, and we haven't shown them all yet...
