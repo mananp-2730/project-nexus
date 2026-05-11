@@ -142,7 +142,7 @@ export default function Home() {
                 }
                 if (message.startsWith("Product Manager:")) {
                   colorClass = "text-purple-400 border-purple-900/50 bg-purple-900/10";
-                  badge = "🎯 Product Manager";
+                  badge = "Product Manager";
                   message = message.replace("Product Manager: ", "");
                 }
                 if (message.startsWith("SYSTEM:")) {
