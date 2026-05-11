@@ -1,24 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Home() {
   const [brief, setBrief] = useState("");
-  const [budget, setBudget] = useState(10000);     // New State
-  const [timeline, setTimeline] = useState(4);     // New State
+  const [budget, setBudget] = useState(10000);
+  const [timeline, setTimeline] = useState(4);
+  
+  // We now have TWO lists. The full debate from Python, and the ones currently visible on screen.
   const [debate, setDebate] = useState<string[]>([]);
+  const [visibleDebate, setVisibleDebate] = useState<string[]>([]);
+  
   const [loading, setLoading] = useState(false);
+  const [isTyping, setIsTyping] = useState(false); // Tracks if agents are "talking"
 
   const startWarRoom = async () => {
     if (!brief) return;
     setLoading(true);
     setDebate([]); 
+    setVisibleDebate([]); // Clear the screen
 
     try {
       const response = await fetch("http://localhost:8000/api/start-debate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // Send the new budget and timeline to Python!
         body: JSON.stringify({ 
           client_brief: brief,
           budget: budget,
@@ -27,14 +32,32 @@ export default function Home() {
       });
 
       const data = await response.json();
-      setDebate(data.debate_log);
+      setDebate(data.debate_log); // Save the full script from Python
+      setIsTyping(true);          // Tell the UI to start "playing" the script
     } catch (error) {
       console.error("Error connecting to War Room:", error);
-      setDebate(["SYSTEM ERROR: Could not connect to the Python backend."]);
+      setVisibleDebate(["SYSTEM ERROR: Could not connect to the Python backend."]);
     }
 
     setLoading(false);
   };
+
+  // THE MAGIC MOVIE DIRECTOR: This effect runs every time 'visibleDebate' changes
+  useEffect(() => {
+    // If we have messages to show, and we haven't shown them all yet...
+    if (isTyping && visibleDebate.length < debate.length) {
+      const timer = setTimeout(() => {
+        // Add exactly ONE new message to the screen
+        setVisibleDebate((prev) => [...prev, debate[prev.length]]);
+      }, 1500); // Wait 1.5 seconds between each message
+      
+      return () => clearTimeout(timer); // Cleanup timer
+    } 
+    // If we've shown all the messages, turn off the typing animation
+    else if (visibleDebate.length === debate.length && debate.length > 0) {
+      setIsTyping(false);
+    }
+  }, [debate, visibleDebate, isTyping]);
 
   return (
     <div className="min-h-screen bg-gray-950 text-white p-8 font-sans">
@@ -46,8 +69,6 @@ export default function Home() {
         </div>
 
         <div className="bg-gray-900 p-6 rounded-xl border border-gray-800 shadow-xl space-y-6">
-          
-          {/* Text Area */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-300">Client Brief & Core Concept</label>
             <textarea
@@ -59,7 +80,6 @@ export default function Home() {
             />
           </div>
 
-          {/* New Budget and Timeline Inputs */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-300">Budget ($)</label>
@@ -83,28 +103,59 @@ export default function Home() {
 
           <button
             onClick={startWarRoom}
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-bold py-3 rounded-lg transition-colors"
+            disabled={loading || isTyping}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2"
           >
-            {loading ? "Agents are arguing..." : "Initialize War Room Debate"}
+            {loading ? (
+              "Contacting Agents..."
+            ) : isTyping ? (
+              <>
+                <span className="animate-pulse">Agents are debating...</span>
+              </>
+            ) : (
+              "Initialize War Room Debate"
+            )}
           </button>
         </div>
 
-        {/* Debate Log */}
-        {debate.length > 0 && (
+        {/* Debate Log - Now using visibleDebate instead of debate! */}
+        {visibleDebate.length > 0 && (
           <div className="bg-gray-900 p-6 rounded-xl border border-gray-800 shadow-xl space-y-4">
-            <h2 className="text-xl font-bold text-gray-200 border-b border-gray-800 pb-2">Debate Log</h2>
+            <h2 className="text-xl font-bold text-gray-200 border-b border-gray-800 pb-2 flex justify-between items-center">
+              <span>Debate Log</span>
+              {isTyping && <span className="text-sm text-blue-400 animate-pulse">Typing...</span>}
+            </h2>
             <div className="space-y-4">
-              {debate.map((message, index) => {
-                let colorClass = "text-gray-300";
-                if (message.startsWith("Sales:")) colorClass = "text-green-400";
-                if (message.startsWith("Engineering:")) colorClass = "text-red-400";
-                if (message.startsWith("Product Manager:")) colorClass = "text-purple-400";
-                if (message.startsWith("SYSTEM:")) colorClass = "text-yellow-400 font-mono text-sm";
+              {visibleDebate.map((message, index) => {
+                let colorClass = "text-gray-300 border-gray-700";
+                let badge = "";
+                
+                if (message.startsWith("Sales:")) {
+                  colorClass = "text-green-400 border-green-900/50 bg-green-900/10";
+                  badge = "💼 Sales";
+                  message = message.replace("Sales: ", "");
+                }
+                if (message.startsWith("Engineering:")) {
+                  colorClass = "text-red-400 border-red-900/50 bg-red-900/10";
+                  badge = "⚙️ Engineering";
+                  message = message.replace("Engineering: ", "");
+                }
+                if (message.startsWith("Product Manager:")) {
+                  colorClass = "text-purple-400 border-purple-900/50 bg-purple-900/10";
+                  badge = "🎯 Product Manager";
+                  message = message.replace("Product Manager: ", "");
+                }
+                if (message.startsWith("SYSTEM:")) {
+                  colorClass = "text-yellow-400 border-yellow-900/50 font-mono text-sm";
+                  badge = "🖥️ SYSTEM";
+                  message = message.replace("SYSTEM: ", "");
+                }
 
+                // Added a cool fade-in animation to new messages
                 return (
-                  <div key={index} className={`p-4 bg-gray-800 rounded-lg border border-gray-700 ${colorClass}`}>
-                    {message}
+                  <div key={index} className={`p-5 rounded-lg border animate-in fade-in slide-in-from-bottom-2 duration-500 ${colorClass}`}>
+                    <div className="font-bold text-sm mb-1 opacity-80">{badge}</div>
+                    <div className="leading-relaxed">{message}</div>
                   </div>
                 );
               })}
