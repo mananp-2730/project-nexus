@@ -132,7 +132,7 @@ export default function Home() {
                 
                 if (message.startsWith("Sales:")) {
                   colorClass = "text-green-400 border-green-900/50 bg-green-900/10";
-                  badge = "💼 Sales";
+                  badge = "Sales";
                   message = message.replace("Sales: ", "");
                 }
                 if (message.startsWith("Engineering:")) {
