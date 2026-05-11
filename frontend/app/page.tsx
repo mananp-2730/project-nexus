@@ -21,7 +21,7 @@ export default function Home() {
     setVisibleDebate([]); // Clear the screen
 
     try {
-      const response = await fetch("http://localhost:8000/api/start-debate", {
+      const response = await fetch("https://project-nexus-api-1tly.onrender.com", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
