@@ -23,3 +23,9 @@ This application is powered by **LangGraph** for state management and agent orch
 * **Styling:** Tailwind CSS
 * **UX:** Custom live-typing streaming effect to simulate real-time chat
 * **Hosting:** Vercel
+
+**Backend (API & AI)**
+* **Framework:** Python, FastAPI, Uvicorn
+* **AI Orchestration:** LangGraph, LangChain
+* **LLM Engine:** Llama 3.3 70B (via Groq API)
+* **Hosting:** Render
