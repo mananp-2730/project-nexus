@@ -17,6 +17,9 @@ This application is powered by **LangGraph** for state management and agent orch
 * **The Director:** LangGraph nodes and edges that force a sequential, structured debate (Sales -> Eng -> PM) rather than chaotic AI generation.
 
 ## Tech Stack
-* **Backend:** Python, FastAPI, Uvicorn
-* **AI Orchestration:** LangGraph, LangChain
-* **LLM Engine:** Llama 3.3 70B (via Groq API)
+
+**Frontend (Client)**
+* **Framework:** Next.js (React)
+* **Styling:** Tailwind CSS
+* **UX:** Custom live-typing streaming effect to simulate real-time chat
+* **Hosting:** Vercel
