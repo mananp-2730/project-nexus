@@ -4,7 +4,7 @@
 
 Project Nexus is a full-stack, multi-agent AI orchestrator designed to solve a classic business problem: the chaotic disconnect between Sales and Engineering.
 
-By utilizing a state-graph architecture, Nexus creates an automated "War Room" where an AI Sales Agent and an AI Engineering Agent debate client briefs in real-time. It translates vague, ambitious sales requirements into structured, technically feasible constraints before a human Product Manager ever has to step in.
+By utilizing a state-graph architecture, Nexus creates an automated "War Room" where AI agents debate client briefs in real-time. It translates vague, ambitious sales requirements into structured, technically feasible constraints, automating the product compromise process before a human ever has to step in.
 
 ## The Architecture (Phase 1)
 
