@@ -7,22 +7,30 @@ export default function Home() {
   const [budget, setBudget] = useState(10000);
   const [timeline, setTimeline] = useState(4);
   
-  // We now have TWO lists. The full debate from Python, and the ones currently visible on screen.
   const [debate, setDebate] = useState<string[]>([]);
   const [visibleDebate, setVisibleDebate] = useState<string[]>([]);
   
+  // NEW: State to hold our analytics data
+  const [analytics, setAnalytics] = useState<{
+    original_budget: number;
+    final_cost: number;
+    budget_saved: number;
+  } | null>(null);
+
   const [loading, setLoading] = useState(false);
-  const [isTyping, setIsTyping] = useState(false); // Tracks if agents are "talking"
+  const [isTyping, setIsTyping] = useState(false);
 
   const startWarRoom = async () => {
     if (!brief) return;
     setLoading(true);
     setDebate([]); 
     setVisibleDebate([]); 
+    setAnalytics(null); // Clear old analytics
 
     try {
-      // Make sure this URL is your exact Render URL!
-      const response = await fetch("https://project-nexus-api-1tly.onrender.com/api/start-debate", {
+      // NOTE: If you are testing locally, use localhost:8000. 
+      // If pushing to Vercel, change this back to your Render URL!
+      const response = await fetch("http://localhost:8000/api/start-debate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -34,36 +42,32 @@ export default function Home() {
 
       const data = await response.json();
 
-      // THE SAFETY NET: Check if Python actually gave us a debate log!
       if (data.debate_log) {
         setDebate(data.debate_log);
         setIsTyping(true);
+        // NEW: Save the analytics data if it exists!
+        if (data.analytics) {
+          setAnalytics(data.analytics);
+        }
       } else {
-        // If Python sent an error, print it safely to the screen instead of crashing
         setVisibleDebate([`SYSTEM ERROR: Backend returned -> ${JSON.stringify(data)}`]);
       }
       
     } catch (error) {
       console.error("Error connecting to War Room:", error);
-      setVisibleDebate(["SYSTEM ERROR: Could not connect to the Python backend. It might be waking up!"]);
+      setVisibleDebate(["SYSTEM ERROR: Could not connect to the Python backend."]);
     }
 
     setLoading(false);
   };
-  
-  // THE MAGIC MOVIE DIRECTOR: This effect runs every time 'visibleDebate' changes
+
   useEffect(() => {
-    // If we have messages to show, and we haven't shown them all yet...
     if (isTyping && visibleDebate.length < debate.length) {
       const timer = setTimeout(() => {
-        // Add exactly ONE new message to the screen
         setVisibleDebate((prev) => [...prev, debate[prev.length]]);
-      }, 1500); // Wait 1.5 seconds between each message
-      
-      return () => clearTimeout(timer); // Cleanup timer
-    } 
-    // If we've shown all the messages, turn off the typing animation
-    else if (visibleDebate.length === debate.length && debate.length > 0) {
+      }, 1500); 
+      return () => clearTimeout(timer); 
+    } else if (visibleDebate.length === debate.length && debate.length > 0) {
       setIsTyping(false);
     }
   }, [debate, visibleDebate, isTyping]);
@@ -118,16 +122,32 @@ export default function Home() {
             {loading ? (
               "Contacting Agents..."
             ) : isTyping ? (
-              <>
-                <span className="animate-pulse">Agents are debating...</span>
-              </>
+              <span className="animate-pulse">Agents are debating...</span>
             ) : (
               "Initialize War Room Debate"
             )}
           </button>
         </div>
 
-        {/* Debate Log - Now using visibleDebate instead of debate! */}
+        {/* NEW: Analytics Dashboard Cards */}
+        {analytics && !isTyping && (
+          <div className="grid grid-cols-3 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="bg-gray-800 p-5 rounded-xl border border-gray-700 text-center shadow-lg">
+              <div className="text-sm text-gray-400 uppercase tracking-wider font-bold mb-1">Original Budget</div>
+              <div className="text-3xl font-bold text-gray-200">${analytics.original_budget.toLocaleString()}</div>
+            </div>
+            <div className="bg-gray-800 p-5 rounded-xl border border-gray-700 text-center shadow-lg">
+              <div className="text-sm text-gray-400 uppercase tracking-wider font-bold mb-1">Final MVP Cost</div>
+              <div className="text-3xl font-bold text-blue-400">${analytics.final_cost.toLocaleString()}</div>
+            </div>
+            <div className="bg-green-900/20 p-5 rounded-xl border border-green-900/50 text-center shadow-lg">
+              <div className="text-sm text-green-400 uppercase tracking-wider font-bold mb-1">Budget Saved</div>
+              <div className="text-3xl font-bold text-green-400">${analytics.budget_saved.toLocaleString()}</div>
+            </div>
+          </div>
+        )}
+
+        {/* Debate Log */}
         {visibleDebate.length > 0 && (
           <div className="bg-gray-900 p-6 rounded-xl border border-gray-800 shadow-xl space-y-4">
             <h2 className="text-xl font-bold text-gray-200 border-b border-gray-800 pb-2 flex justify-between items-center">
@@ -141,30 +161,29 @@ export default function Home() {
                 
                 if (message.startsWith("Sales:")) {
                   colorClass = "text-green-400 border-green-900/50 bg-green-900/10";
-                  badge = "Sales";
+                  badge = "💼 Sales";
                   message = message.replace("Sales: ", "");
                 }
                 if (message.startsWith("Engineering:")) {
                   colorClass = "text-red-400 border-red-900/50 bg-red-900/10";
-                  badge = "Engineering";
+                  badge = "⚙️ Engineering";
                   message = message.replace("Engineering: ", "");
                 }
                 if (message.startsWith("Product Manager:")) {
                   colorClass = "text-purple-400 border-purple-900/50 bg-purple-900/10";
-                  badge = "Product Manager";
+                  badge = "🎯 Product Manager";
                   message = message.replace("Product Manager: ", "");
                 }
                 if (message.startsWith("SYSTEM:")) {
                   colorClass = "text-yellow-400 border-yellow-900/50 font-mono text-sm";
-                  badge = "SYSTEM";
+                  badge = "🖥️ SYSTEM";
                   message = message.replace("SYSTEM: ", "");
                 }
 
-                // Added a cool fade-in animation to new messages
                 return (
                   <div key={index} className={`p-5 rounded-lg border animate-in fade-in slide-in-from-bottom-2 duration-500 ${colorClass}`}>
                     <div className="font-bold text-sm mb-1 opacity-80">{badge}</div>
-                    <div className="leading-relaxed">{message}</div>
+                    <div className="leading-relaxed whitespace-pre-wrap">{message}</div>
                   </div>
                 );
               })}
