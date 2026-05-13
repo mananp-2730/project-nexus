@@ -50,7 +50,11 @@ def pm_agent(state: NexusState):
     {state['debate_log']}
     
     Goal: Step in and make a final, realistic compromise. Tell Sales what they need to cut, and tell Engineering what they must build. 
-    Keep your response to 3 clear sentences.
+    
+    CRITICAL INSTRUCTION: You MUST calculate a final estimated cost for your compromised MVP. 
+    At the very end of your response, you must include this exact tag on a new line: "FINAL_COST: [number]"
+    Example: FINAL_COST: 8500
+    Do not use commas in the number.
     """
     response = llm.invoke(prompt)
     return {"debate_log": [f"Product Manager: {response.content}"]}
