@@ -25,11 +25,10 @@ def read_root():
 
 @app.post("/api/start-debate")
 def start_debate(request: ProjectRequest):
-    # 2. Map the user's inputs directly into the LangGraph state
     initial_state = {
         "client_brief": request.client_brief,
-        "budget": request.budget,                  # Updated!
-        "timeline_weeks": request.timeline_weeks,  # Updated!
+        "budget": request.budget,
+        "timeline_weeks": request.timeline_weeks,
         "tech_stack": [],
         "features": [{"feature": "Core App", "priority": "High", "status": "Proposed"}],
         "debate_log": ["SYSTEM: War Room Initialized."],
@@ -40,4 +39,34 @@ def start_debate(request: ProjectRequest):
     }
     
     final_state = nexus_app.invoke(initial_state)
-    return {"debate_log": final_state["debate_log"]}
+    
+    # --- NEW ANALYTICS LOGIC ---
+    pm_message = final_state["debate_log"][-1]
+    final_cost = request.budget # Default fallback
+    
+    # 1. Search for our secret tag
+    if "FINAL_COST:" in pm_message:
+        try:
+            # 2. Extract the number from the string
+            cost_str = pm_message.split("FINAL_COST:")[1].strip()
+            # Clean up any extra punctuation the AI might have accidentally added
+            cost_str = ''.join(filter(str.isdigit, cost_str))
+            final_cost = int(cost_str)
+        except Exception as e:
+            print("Failed to parse cost:", e)
+            
+    # 3. Calculate the ROI / Budget Delta
+    budget_saved = request.budget - final_cost
+    
+    # 4. Scrub the secret tag from the message so the UI just sees normal text
+    clean_log = [msg.split("FINAL_COST:")[0].strip() for msg in final_state["debate_log"]]
+    
+    # 5. Send BOTH the debate and the new analytics data to the frontend!
+    return {
+        "debate_log": clean_log,
+        "analytics": {
+            "original_budget": request.budget,
+            "final_cost": final_cost,
+            "budget_saved": budget_saved
+        }
+    }
