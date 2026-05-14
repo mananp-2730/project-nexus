@@ -16,8 +16,9 @@ This application is powered by **LangGraph** for state management and agent orch
 * **The Whiteboard (State):** A shared data structure tracking the client brief, dynamic budget, timeline constraints, and the ongoing debate log.
 * **The Sales Agent:** Optimized to satisfy the client, pitch ambitious features, and attempt to close the deal at all costs.
 * **The Engineering Agent:** Optimized for technical skepticism, budget reality checks, and fierce feasibility pushback.
-* **The Product Manager Agent:** The adult in the room. This agent reviews the argument, ruthlessly cuts scope, and defines a realistic Minimum Viable Product (MVP) based on the strict budget and timeline.
-* **The Director:** LangGraph nodes and edges that force a sequential, structured debate (Sales -> Eng -> PM) rather than chaotic AI generation.
+* **The Product Manager Agent:** The adult in the room. This agent reviews the argument, ruthlessly cuts scope, defines a realistic Minimum Viable Product (MVP), and mathematically calculates the final cost.
+* **The Director:** LangGraph nodes and edges that force a sequential, structured debate (Sales -> Eng -> PM).
+* **The Data Extractor:** A Python pipeline that intercepts the PM's final output, isolates the cost metrics, and feeds clean analytics to the frontend dashboard.
 
 ## Tech Stack
 
