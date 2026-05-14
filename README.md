@@ -25,7 +25,7 @@ This application is powered by **LangGraph** for state management and agent orch
 **Frontend (Client)**
 * **Framework:** Next.js (React)
 * **Styling:** Tailwind CSS
-* **UX:** Custom live-typing streaming effect to simulate real-time chat
+* **UX:** Custom live-typing streaming effect and dynamic ROI calculation dashboard
 * **Hosting:** Vercel
 
 **Backend (API & AI)**
