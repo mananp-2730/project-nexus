@@ -33,3 +33,5 @@ This application is powered by **LangGraph** for state management and agent orch
 * **AI Orchestration:** LangGraph, LangChain
 * **LLM Engine:** Llama 3.3 70B (via Groq API)
 * **Hosting:** Render
+
+## Local Setup & Installation
