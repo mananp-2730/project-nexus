@@ -53,3 +53,4 @@ Want to run the War Room locally? Follow these steps:
    pip install -r requirements.txt
 ```
 
+Create a .env file in the backend directory and add your Groq API key:
