@@ -59,3 +59,7 @@ Create a .env file in the backend directory and add your Groq API key:
 ```
 
 Start the API:
+```bash
+   uvicorn app.main:app --reload
+```
+
