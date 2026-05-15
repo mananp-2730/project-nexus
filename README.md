@@ -64,3 +64,10 @@ Start the API:
 ```
 
 **3. Setup the Next.js Frontend**
+Open a new terminal window:
+```bash
+   cd project-nexus/frontend
+   npm install
+   npm run dev
+```
+
