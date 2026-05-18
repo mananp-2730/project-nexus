@@ -74,10 +74,24 @@ def start_debate(request: ProjectRequest):
     # 3. Calculate the ROI / Budget Delta
     budget_saved = request.budget - final_cost
     
-    # 4. Scrub the secret tag from the message so the UI just sees normal text
+    # 4. Scrub the secret tag from the message
     clean_log = [msg.split("FINAL_COST:")[0].strip() for msg in final_state["debate_log"]]
     
-    # 5. Send BOTH the debate and the new analytics data to the frontend!
+    # --- NEW: Save the memory to Supabase! ---
+    try:
+        supabase.table("past_debates").insert({
+            "client_brief": request.client_brief,
+            "original_budget": request.budget,
+            "timeline_weeks": request.timeline_weeks,
+            "final_cost": final_cost,
+            "budget_saved": budget_saved,
+            "debate_log": clean_log
+        }).execute()
+        print("Successfully saved to Supabase!")
+    except Exception as e:
+        print(f"Failed to save to database: {e}")
+    
+    # 5. Send data to the frontend
     return {
         "debate_log": clean_log,
         "analytics": {
