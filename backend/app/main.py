@@ -100,3 +100,13 @@ def start_debate(request: ProjectRequest):
             "budget_saved": budget_saved
         }
     }
+
+@app.get("/api/history")
+def get_history():
+    try:
+        # Ask Supabase for the 10 most recent debates, sorted by newest first
+        response = supabase.table("past_debates").select("*").order("created_at", desc=True).limit(10).execute()
+        return {"history": response.data}
+    except Exception as e:
+        print(f"Failed to fetch history: {e}")
+        return {"history": []}
