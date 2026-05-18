@@ -4,3 +4,4 @@ pydantic
 langchain-groq
 langgraph
 python-dotenv
+supabase
