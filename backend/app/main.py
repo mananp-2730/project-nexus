@@ -1,7 +1,13 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from dotenv import load_dotenv
+from supabase import create_client, Client
 from .engine import nexus_app
+
+# Load environment variables
+load_dotenv(override=True)
 
 app = FastAPI(title="Project Nexus API")
 
@@ -12,6 +18,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# --- NEW: Connect to Supabase ---
+supabase_url: str = os.getenv("SUPABASE_URL")
+supabase_key: str = os.getenv("SUPABASE_KEY")
+supabase: Client = create_client(supabase_url, supabase_key)
+
+class ProjectRequest(BaseModel):
+    client_brief: str
+    budget: int
+    timeline_weeks: int
 
 # 1. Update the expected request from the frontend
 class ProjectRequest(BaseModel):
