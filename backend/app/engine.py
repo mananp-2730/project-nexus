@@ -18,5 +18,11 @@ workflow.add_edge("sales", "engineering")
 workflow.add_edge("engineering", "pm")  # Eng now passes the mic to the PM
 workflow.add_edge("pm", END)            # PM ends the meeting
 
-# 4. Compile the Engine
-nexus_app = workflow.compile()
+# Create a memory bank to hold the state while paused
+memory = MemorySaver()
+
+# Compile the graph with the memory AND a breakpoint!
+nexus_app = workflow.compile(
+    checkpointer=memory,
+    interrupt_before=["pm_agent"] # This tells the AI to freeze right before the PM speaks!
+)
