@@ -82,3 +82,68 @@ def get_history():
     except Exception as e:
         print(f"Failed to fetch history: {e}")
         return {"history": []}
+    
+# --- NEW: Human-in-the-Loop Resume Request ---
+class ResumeRequest(BaseModel):
+    thread_id: str
+    human_compromise: str
+
+@app.post("/api/resume-debate")
+def resume_debate(request: ResumeRequest):
+    # 1. Find the exact frozen memory using the thread_id
+    config = {"configurable": {"thread_id": request.thread_id}}
+    
+    try:
+        # 2. Inject the human's compromise into the whiteboard (State)
+        human_message = f"Human Director: {request.human_compromise}"
+        nexus_app.update_state(config, {"debate_log": [human_message]})
+        
+        # 3. Resume the graph from where it paused! (Passing None means "just keep going")
+        final_state = nexus_app.invoke(None, config=config)
+        
+        # --- 4. RESTORE ANALYTICS & DATABASE LOGIC ---
+        pm_message = final_state["debate_log"][-1]
+        original_budget = final_state["budget"] 
+        final_cost = original_budget # Default fallback
+        
+        # Extract the secret tag
+        if "FINAL_COST:" in pm_message:
+            try:
+                cost_str = pm_message.split("FINAL_COST:")[1].strip()
+                cost_str = ''.join(filter(str.isdigit, cost_str))
+                final_cost = int(cost_str)
+            except Exception as e:
+                print("Failed to parse cost:", e)
+                
+        budget_saved = original_budget - final_cost
+        
+        # Scrub the secret tag
+        clean_log = [msg.split("FINAL_COST:")[0].strip() for msg in final_state["debate_log"]]
+        
+        # Save the completed War Room to Supabase
+        try:
+            supabase.table("past_debates").insert({
+                "client_brief": final_state["client_brief"],
+                "original_budget": original_budget,
+                "timeline_weeks": final_state["timeline_weeks"],
+                "final_cost": final_cost,
+                "budget_saved": budget_saved,
+                "debate_log": clean_log
+            }).execute()
+        except Exception as e:
+            print(f"Failed to save to database: {e}")
+        
+        # Send the final data to the frontend
+        return {
+            "debate_log": clean_log,
+            "analytics": {
+                "original_budget": original_budget,
+                "final_cost": final_cost,
+                "budget_saved": budget_saved
+            },
+            "status": "completed"
+        }
+        
+    except Exception as e:
+        print(f"Graph resume failed: {e}")
+        return {"error": str(e)}
