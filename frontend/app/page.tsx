@@ -268,7 +268,7 @@ export default function Home() {
                   }
                   if (message.startsWith("SYSTEM:")) {
                     colorClass = "text-yellow-400 border-yellow-900/50 font-mono text-sm";
-                    badge = "🖥️ SYSTEM";
+                    badge = "SYSTEM";
                     message = message.replace("SYSTEM: ", "");
                   }
                   if (message.startsWith("Human Director:")) {
