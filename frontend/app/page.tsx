@@ -16,27 +16,25 @@ export default function Home() {
     budget_saved: number;
   } | null>(null);
 
-  // NEW: State to hold our Supabase history
   const [history, setHistory] = useState<any[]>([]);
-
   const [loading, setLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  // NEW: Fetch history from the backend
+  // --- NEW: Human-in-the-Loop States ---
+  const [threadId, setThreadId] = useState<string | null>(null);
+  const [waitingForHuman, setWaitingForHuman] = useState(false);
+  const [humanInput, setHumanInput] = useState("");
+
   const fetchHistory = async () => {
     try {
-      // NOTE: Use localhost:8000 for local testing. Update to Render URL for production!
       const res = await fetch("http://localhost:8000/api/history");
       const data = await res.json();
-      if (data.history) {
-        setHistory(data.history);
-      }
+      if (data.history) setHistory(data.history);
     } catch (error) {
       console.error("Error fetching history:", error);
     }
   };
 
-  // NEW: Run fetchHistory exactly once when the app loads
   useEffect(() => {
     fetchHistory();
   }, []);
@@ -47,16 +45,15 @@ export default function Home() {
     setDebate([]); 
     setVisibleDebate([]); 
     setAnalytics(null); 
+    setThreadId(null);
+    setWaitingForHuman(false);
+    setHumanInput("");
 
     try {
       const response = await fetch("http://localhost:8000/api/start-debate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          client_brief: brief,
-          budget: budget,
-          timeline_weeks: timeline
-        }),
+        body: JSON.stringify({ client_brief: brief, budget, timeline_weeks: timeline }),
       });
 
       const data = await response.json();
@@ -64,38 +61,65 @@ export default function Home() {
       if (data.debate_log) {
         setDebate(data.debate_log);
         setIsTyping(true);
-        if (data.analytics) {
-          setAnalytics(data.analytics);
+        
+        // NEW: Check if the graph paused!
+        if (data.status === "waiting_for_human") {
+          setThreadId(data.thread_id);
+          // We don't set waitingForHuman to true until the typing effect catches up!
         }
-        // Refresh the sidebar to show the newly saved debate!
-        fetchHistory();
-      } else {
-        setVisibleDebate([`SYSTEM ERROR: Backend returned -> ${JSON.stringify(data)}`]);
       }
-      
     } catch (error) {
       console.error("Error connecting to War Room:", error);
       setVisibleDebate(["SYSTEM ERROR: Could not connect to the Python backend."]);
     }
-
     setLoading(false);
   };
 
-  // NEW: Function to load a past debate from the sidebar into the main window
+  // --- NEW: Function to send the human compromise ---
+  const submitCompromise = async () => {
+    if (!humanInput || !threadId) return;
+    setLoading(true);
+    setWaitingForHuman(false); // Hide the input box
+
+    try {
+      const response = await fetch("http://localhost:8000/api/resume-debate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ thread_id: threadId, human_compromise: humanInput }),
+      });
+
+      const data = await response.json();
+
+      if (data.debate_log) {
+        // Update the master list; the typing effect will naturally resume!
+        setDebate(data.debate_log);
+        setIsTyping(true);
+        
+        if (data.analytics) setAnalytics(data.analytics);
+        fetchHistory(); // Refresh the sidebar because the debate is now saved!
+      }
+    } catch (error) {
+      console.error("Error resuming War Room:", error);
+    }
+    setLoading(false);
+  };
+
   const loadPastDebate = (pastDebate: any) => {
     setBrief(pastDebate.client_brief);
     setBudget(pastDebate.original_budget);
     setTimeline(pastDebate.timeline_weeks);
     setDebate(pastDebate.debate_log);
-    setVisibleDebate(pastDebate.debate_log); // Show instantly without typing effect
+    setVisibleDebate(pastDebate.debate_log);
     setAnalytics({
       original_budget: pastDebate.original_budget,
       final_cost: pastDebate.final_cost,
       budget_saved: pastDebate.budget_saved
     });
     setIsTyping(false);
+    setWaitingForHuman(false);
   };
 
+  // The Movie Director: Controls the typing effect and triggers the Human Input box
   useEffect(() => {
     if (isTyping && visibleDebate.length < debate.length) {
       const timer = setTimeout(() => {
@@ -104,14 +128,17 @@ export default function Home() {
       return () => clearTimeout(timer); 
     } else if (visibleDebate.length === debate.length && debate.length > 0) {
       setIsTyping(false);
+      // NEW: If the typing is done and we have a thread_id, reveal the human input!
+      if (threadId && !analytics) {
+        setWaitingForHuman(true);
+      }
     }
-  }, [debate, visibleDebate, isTyping]);
+  }, [debate, visibleDebate, isTyping, threadId, analytics]);
 
   return (
-    // NEW: Flex layout for the Sidebar
     <div className="flex h-screen bg-gray-950 text-white font-sans overflow-hidden">
       
-      {/* --- SIDEBAR --- */}
+      {/* SIDEBAR */}
       <div className="w-80 bg-gray-900 border-r border-gray-800 flex flex-col overflow-y-auto">
         <div className="p-6 border-b border-gray-800 sticky top-0 bg-gray-900 z-10">
           <h2 className="text-xl font-bold text-gray-200">Past War Rooms</h2>
@@ -143,7 +170,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* --- MAIN CONTENT --- */}
+      {/* MAIN CONTENT */}
       <div className="flex-1 overflow-y-auto p-8">
         <div className="max-w-4xl mx-auto space-y-8 pb-12">
           
@@ -187,16 +214,10 @@ export default function Home() {
 
             <button
               onClick={startWarRoom}
-              disabled={loading || isTyping}
+              disabled={loading || isTyping || waitingForHuman}
               className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2"
             >
-              {loading ? (
-                "Contacting Agents..."
-              ) : isTyping ? (
-                <span className="animate-pulse">Agents are debating...</span>
-              ) : (
-                "Initialize War Room Debate"
-              )}
+              {loading && !waitingForHuman ? "Contacting Agents..." : isTyping ? <span className="animate-pulse">Agents are debating...</span> : "Initialize War Room Debate"}
             </button>
           </div>
 
@@ -232,23 +253,28 @@ export default function Home() {
                   
                   if (message.startsWith("Sales:")) {
                     colorClass = "text-green-400 border-green-900/50 bg-green-900/10";
-                    badge = "Sales";
+                    badge = "💼 Sales";
                     message = message.replace("Sales: ", "");
                   }
                   if (message.startsWith("Engineering:")) {
                     colorClass = "text-red-400 border-red-900/50 bg-red-900/10";
-                    badge = "Engineering";
+                    badge = "⚙️ Engineering";
                     message = message.replace("Engineering: ", "");
                   }
                   if (message.startsWith("Product Manager:")) {
                     colorClass = "text-purple-400 border-purple-900/50 bg-purple-900/10";
-                    badge = "Product Manager";
+                    badge = "🎯 Product Manager AI";
                     message = message.replace("Product Manager: ", "");
                   }
                   if (message.startsWith("SYSTEM:")) {
                     colorClass = "text-yellow-400 border-yellow-900/50 font-mono text-sm";
-                    badge = "SYSTEM";
+                    badge = "🖥️ SYSTEM";
                     message = message.replace("SYSTEM: ", "");
+                  }
+                  if (message.startsWith("Human Director:")) {
+                    colorClass = "text-blue-400 border-blue-900/50 bg-blue-900/10";
+                    badge = "👤 You (Director)";
+                    message = message.replace("Human Director: ", "");
                   }
 
                   return (
@@ -258,6 +284,35 @@ export default function Home() {
                     </div>
                   );
                 })}
+
+                {/* --- NEW: THE HUMAN CONSOLE --- */}
+                {waitingForHuman && (
+                  <div className="p-5 rounded-lg border border-blue-500/50 bg-blue-900/20 animate-in fade-in zoom-in duration-500 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+                    <div className="font-bold text-sm mb-3 text-blue-400 flex items-center gap-2">
+                      <span className="relative flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                      </span>
+                      Awaiting Human Director Input
+                    </div>
+                    <textarea
+                      className="w-full bg-gray-950 border border-blue-900 rounded-lg p-4 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none mb-3"
+                      rows={2}
+                      placeholder="Step in! What is your final compromise for the Product Manager to formalize?"
+                      value={humanInput}
+                      onChange={(e) => setHumanInput(e.target.value)}
+                    />
+                    <button
+                      onClick={submitCompromise}
+                      disabled={!humanInput || loading}
+                      className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-colors float-right"
+                    >
+                      {loading ? "Processing..." : "Submit Decision"}
+                    </button>
+                    <div className="clear-both"></div>
+                  </div>
+                )}
+                
               </div>
             </div>
           )}
