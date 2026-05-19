@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 from supabase import create_client, Client
 from .engine import nexus_app
+import uuid
 
 # Load environment variables
 load_dotenv(override=True)
