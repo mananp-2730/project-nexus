@@ -273,7 +273,7 @@ export default function Home() {
                   }
                   if (message.startsWith("Human Director:")) {
                     colorClass = "text-blue-400 border-blue-900/50 bg-blue-900/10";
-                    badge = "👤 You (Director)";
+                    badge = "You (Director)";
                     message = message.replace("Human Director: ", "");
                   }
 
