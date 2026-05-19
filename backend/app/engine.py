@@ -24,5 +24,5 @@ memory = MemorySaver()
 # Compile the graph with the memory AND a breakpoint!
 nexus_app = workflow.compile(
     checkpointer=memory,
-    interrupt_before=["pm_agent"] # This tells the AI to freeze right before the PM speaks!
+    interrupt_before=["pm"] # This tells the AI to freeze right before the PM speaks!
 )
