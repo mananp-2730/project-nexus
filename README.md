@@ -20,7 +20,7 @@ This application is powered by **LangGraph** for state management and agent orch
 * **The Sales Agent:** Optimized to satisfy the client, pitch ambitious features, and attempt to close the deal at all costs.
 * **The Engineering Agent:** Optimized for technical skepticism, budget reality checks, and fierce feasibility pushback.
 * **The Human Director:** A strategic pause in the graph execution that allows the human user to inject constraints and commands before the AI PM finalizes the scope.
-* **The Product Manager Agent:** The adult in the room. This agent reviews the argument, ruthlessly cuts scope, defines a realistic Minimum Viable Product (MVP), and mathematically calculates the final cost.
+* **The Product Manager Agent:** The adult in the room. This agent reviews the argument, ingests the Human Director's guidance, ruthlessly cuts scope, defines a realistic Minimum Viable Product (MVP), and mathematically calculates the final cost.
 * **The Director:** LangGraph nodes and edges that force a sequential, structured debate (Sales -> Eng -> PM).
 * **The Data Extractor:** A Python pipeline that intercepts the PM's final output, isolates the cost metrics, and feeds clean analytics to the frontend dashboard.
 
