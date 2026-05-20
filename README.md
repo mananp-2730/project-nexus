@@ -22,7 +22,7 @@ This application is powered by **LangGraph** for state management and agent orch
 * **The Human Director:** A strategic pause in the graph execution that allows the human user to inject constraints and commands before the AI PM finalizes the scope.
 * **The Product Manager Agent:** The adult in the room. This agent reviews the argument, ingests the Human Director's guidance, ruthlessly cuts scope, defines a realistic Minimum Viable Product (MVP), and mathematically calculates the final cost.
 * **The Director:** LangGraph nodes and edges that force a sequential, structured debate (Sales -> Eng -> PM).
-* **The Data Extractor:** A Python pipeline that intercepts the PM's final output, isolates the cost metrics, and feeds clean analytics to the frontend dashboard.
+* **The Data Extractor & Database:** A Python pipeline that intercepts the PM's final output, isolates cost metrics, and pushes the entire session to a Supabase PostgreSQL database.
 
 ## Tech Stack
 
