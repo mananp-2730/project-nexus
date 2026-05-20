@@ -59,7 +59,9 @@ Want to run the War Room locally? Follow these steps:
 
 Create a .env file in the backend directory and add your Groq API key:
 ```bash
-   GROQ_API_KEY="your_api_key_here"
+   GROQ_API_KEY="your_groq_api_key_here"
+   SUPABASE_URL="your_supabase_project_url"
+   SUPABASE_KEY="your_supabase_anon_public_key"
 ```
 
 Start the API:
