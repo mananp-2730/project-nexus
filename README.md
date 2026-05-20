@@ -6,6 +6,8 @@ Project Nexus is a full-stack, multi-agent AI orchestrator designed to solve a c
 
 By utilizing a state-graph architecture, Nexus creates an automated "War Room" where AI agents debate client briefs in real-time. It translates vague, ambitious sales requirements into structured, technically feasible constraints, automating the product compromise process before a human ever has to step in.
 
+## Evolution & Features
+
 ## Version 1.1: The Analytics Engine
 Nexus doesn't just generate text; it generates business intelligence. The backend features a custom extraction pipeline that forces the AI Product Manager to quantify its decisions. The system intercepts the AI's response, extracts the final MVP cost, calculates the budget delta, and displays a real-time ROI dashboard on the frontend—proving the financial value of the PM's compromise.
 
