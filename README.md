@@ -31,10 +31,11 @@ This application is powered by **LangGraph** for state management and agent orch
 * **UX:** Custom live-typing streaming effect, dynamic ROI calculation dashboard, and interactive Co-Pilot console.
 * **Hosting:** Vercel
 
-**Backend (API & AI)**
+**Backend (API, AI & Database)**
 * **Framework:** Python, FastAPI, Uvicorn
 * **AI Orchestration:** LangGraph, LangChain
 * **LLM Engine:** Llama 3.3 70B (via Groq API)
+* **Database:** Supabase (PostgreSQL)
 * **Hosting:** Render
 
 ## Local Setup & Installation
