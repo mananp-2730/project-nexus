@@ -8,6 +8,8 @@ By utilizing a state-graph architecture, Nexus creates an automated "War Room" w
 
 ## Evolution & Features
 
+* **V1.1 - The Analytics Engine:** A custom extraction pipeline forces the AI PM to quantify decisions. The system intercepts the output, calculates the budget delta, and displays a real-time ROI dashboard.
+
 ## Version 1.1: The Analytics Engine
 Nexus doesn't just generate text; it generates business intelligence. The backend features a custom extraction pipeline that forces the AI Product Manager to quantify its decisions. The system intercepts the AI's response, extracts the final MVP cost, calculates the budget delta, and displays a real-time ROI dashboard on the frontend—proving the financial value of the PM's compromise.
 
