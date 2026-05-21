@@ -1,11 +1,13 @@
 import os
-from fastapi import FastAPI
+import uuid
+from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from supabase import create_client, Client
+from PyPDF2 import PdfReader
+import io
 from .engine import nexus_app
-import uuid
 
 # Load environment variables
 load_dotenv(override=True)
