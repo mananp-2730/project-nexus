@@ -149,3 +149,25 @@ def resume_debate(request: ResumeRequest):
     except Exception as e:
         print(f"Graph resume failed: {e}")
         return {"error": str(e)}
+    
+# --- NEW: RAG Document Upload Endpoint ---
+@app.post("/api/upload-brief")
+async def upload_brief(file: UploadFile = File(...)):
+    try:
+        # 1. Read the file into memory
+        contents = await file.read()
+        pdf_file = io.BytesIO(contents)
+
+        # 2. Parse the PDF
+        reader = PdfReader(pdf_file)
+        extracted_text = ""
+
+        # 3. Loop through every page and extract the text
+        for page in reader.pages:
+            extracted_text += page.extract_text() + "\n\n"
+
+        return {"filename": file.filename, "extracted_text": extracted_text.strip()}
+
+    except Exception as e:
+        print(f"Failed to read PDF: {e}")
+        return {"error": "Could not parse the PDF file."}
