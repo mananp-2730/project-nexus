@@ -5,3 +5,5 @@ langchain-groq
 langgraph
 python-dotenv
 supabase
+pypdf
+python-multipart
