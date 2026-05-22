@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from supabase import create_client, Client
-from PyPDF2 import PdfReader
+from pypdf import PdfReader
 import io
 from .engine import nexus_app
 
