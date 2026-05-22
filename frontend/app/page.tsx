@@ -20,10 +20,13 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  // --- NEW: Human-in-the-Loop States ---
+  // HITL States
   const [threadId, setThreadId] = useState<string | null>(null);
   const [waitingForHuman, setWaitingForHuman] = useState(false);
   const [humanInput, setHumanInput] = useState("");
+
+  // --- NEW: RAG Upload State ---
+  const [isUploading, setIsUploading] = useState(false);
 
   const fetchHistory = async () => {
     try {
@@ -38,6 +41,34 @@ export default function Home() {
   useEffect(() => {
     fetchHistory();
   }, []);
+
+  // --- NEW: Handle PDF Upload ---
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("http://localhost:8000/api/upload-brief", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      
+      if (data.extracted_text) {
+        // Drop the parsed PDF text directly into the brief!
+        setBrief(data.extracted_text);
+      } else {
+        alert("Failed to extract text from PDF.");
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+    }
+    setIsUploading(false);
+  };
 
   const startWarRoom = async () => {
     if (!brief) return;
@@ -61,11 +92,8 @@ export default function Home() {
       if (data.debate_log) {
         setDebate(data.debate_log);
         setIsTyping(true);
-        
-        // NEW: Check if the graph paused!
         if (data.status === "waiting_for_human") {
           setThreadId(data.thread_id);
-          // We don't set waitingForHuman to true until the typing effect catches up!
         }
       }
     } catch (error) {
@@ -75,11 +103,10 @@ export default function Home() {
     setLoading(false);
   };
 
-  // --- NEW: Function to send the human compromise ---
   const submitCompromise = async () => {
     if (!humanInput || !threadId) return;
     setLoading(true);
-    setWaitingForHuman(false); // Hide the input box
+    setWaitingForHuman(false); 
 
     try {
       const response = await fetch("http://localhost:8000/api/resume-debate", {
@@ -91,12 +118,10 @@ export default function Home() {
       const data = await response.json();
 
       if (data.debate_log) {
-        // Update the master list; the typing effect will naturally resume!
         setDebate(data.debate_log);
         setIsTyping(true);
-        
         if (data.analytics) setAnalytics(data.analytics);
-        fetchHistory(); // Refresh the sidebar because the debate is now saved!
+        fetchHistory(); 
       }
     } catch (error) {
       console.error("Error resuming War Room:", error);
@@ -119,7 +144,6 @@ export default function Home() {
     setWaitingForHuman(false);
   };
 
-  // The Movie Director: Controls the typing effect and triggers the Human Input box
   useEffect(() => {
     if (isTyping && visibleDebate.length < debate.length) {
       const timer = setTimeout(() => {
@@ -128,7 +152,6 @@ export default function Home() {
       return () => clearTimeout(timer); 
     } else if (visibleDebate.length === debate.length && debate.length > 0) {
       setIsTyping(false);
-      // NEW: If the typing is done and we have a thread_id, reveal the human input!
       if (threadId && !analytics) {
         setWaitingForHuman(true);
       }
@@ -180,12 +203,30 @@ export default function Home() {
           </div>
 
           <div className="bg-gray-900 p-6 rounded-xl border border-gray-800 shadow-xl space-y-6">
+            
+            {/* --- NEW: RAG File Uploader --- */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-300">Client Brief & Core Concept</label>
+              <label className="block text-sm font-medium text-gray-300">Upload Client RFP (PDF)</label>
+              <div className="flex items-center justify-center w-full">
+                  <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-gray-700 border-dashed rounded-lg cursor-pointer bg-gray-800 hover:bg-gray-750 hover:border-blue-500 transition-all">
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <svg className="w-8 h-8 mb-3 text-blue-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                          </svg>
+                          <p className="mb-1 text-sm text-gray-400"><span className="font-semibold text-blue-400">Click to upload</span> or drag and drop</p>
+                          <p className="text-xs text-gray-500">{isUploading ? "Extracting text..." : "PDF documents only"}</p>
+                      </div>
+                      <input type="file" className="hidden" accept=".pdf" onChange={handleFileUpload} disabled={isUploading} />
+                  </label>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-300">Extracted Brief / Core Concept</label>
               <textarea
                 className="w-full bg-gray-800 border border-gray-700 rounded-lg p-4 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                rows={3}
-                placeholder="e.g., I want a global ride-sharing app with 4k video streaming..."
+                rows={4}
+                placeholder="Upload a PDF above, or type manually here..."
                 value={brief}
                 onChange={(e) => setBrief(e.target.value)}
               />
@@ -214,14 +255,15 @@ export default function Home() {
 
             <button
               onClick={startWarRoom}
-              disabled={loading || isTyping || waitingForHuman}
+              disabled={loading || isTyping || waitingForHuman || !brief}
               className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2"
             >
               {loading && !waitingForHuman ? "Contacting Agents..." : isTyping ? <span className="animate-pulse">Agents are debating...</span> : "Initialize War Room Debate"}
             </button>
           </div>
 
-          {/* Analytics Dashboard Cards */}
+          {/* ... (The rest of the UI remains identical, with the Debate Log and Analytics cards) ... */}
+          
           {analytics && !isTyping && (
             <div className="grid grid-cols-3 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
               <div className="bg-gray-800 p-5 rounded-xl border border-gray-700 text-center shadow-lg">
@@ -239,7 +281,6 @@ export default function Home() {
             </div>
           )}
 
-          {/* Debate Log */}
           {visibleDebate.length > 0 && (
             <div className="bg-gray-900 p-6 rounded-xl border border-gray-800 shadow-xl space-y-4">
               <h2 className="text-xl font-bold text-gray-200 border-b border-gray-800 pb-2 flex justify-between items-center">
@@ -251,31 +292,11 @@ export default function Home() {
                   let colorClass = "text-gray-300 border-gray-700";
                   let badge = "";
                   
-                  if (message.startsWith("Sales:")) {
-                    colorClass = "text-green-400 border-green-900/50 bg-green-900/10";
-                    badge = "Sales";
-                    message = message.replace("Sales: ", "");
-                  }
-                  if (message.startsWith("Engineering:")) {
-                    colorClass = "text-red-400 border-red-900/50 bg-red-900/10";
-                    badge = "Engineering";
-                    message = message.replace("Engineering: ", "");
-                  }
-                  if (message.startsWith("Product Manager:")) {
-                    colorClass = "text-purple-400 border-purple-900/50 bg-purple-900/10";
-                    badge = "Product Manager AI";
-                    message = message.replace("Product Manager: ", "");
-                  }
-                  if (message.startsWith("SYSTEM:")) {
-                    colorClass = "text-yellow-400 border-yellow-900/50 font-mono text-sm";
-                    badge = "SYSTEM";
-                    message = message.replace("SYSTEM: ", "");
-                  }
-                  if (message.startsWith("Human Director:")) {
-                    colorClass = "text-blue-400 border-blue-900/50 bg-blue-900/10";
-                    badge = "You (Director)";
-                    message = message.replace("Human Director: ", "");
-                  }
+                  if (message.startsWith("Sales:")) { colorClass = "text-green-400 border-green-900/50 bg-green-900/10"; badge = "💼 Sales"; message = message.replace("Sales: ", ""); }
+                  if (message.startsWith("Engineering:")) { colorClass = "text-red-400 border-red-900/50 bg-red-900/10"; badge = "⚙️ Engineering"; message = message.replace("Engineering: ", ""); }
+                  if (message.startsWith("Product Manager:")) { colorClass = "text-purple-400 border-purple-900/50 bg-purple-900/10"; badge = "🎯 Product Manager AI"; message = message.replace("Product Manager: ", ""); }
+                  if (message.startsWith("SYSTEM:")) { colorClass = "text-yellow-400 border-yellow-900/50 font-mono text-sm"; badge = "🖥️ SYSTEM"; message = message.replace("SYSTEM: ", ""); }
+                  if (message.startsWith("Human Director:")) { colorClass = "text-blue-400 border-blue-900/50 bg-blue-900/10"; badge = "👤 You (Director)"; message = message.replace("Human Director: ", ""); }
 
                   return (
                     <div key={index} className={`p-5 rounded-lg border animate-in fade-in slide-in-from-bottom-2 duration-500 ${colorClass}`}>
@@ -285,7 +306,6 @@ export default function Home() {
                   );
                 })}
 
-                {/* --- NEW: THE HUMAN CONSOLE --- */}
                 {waitingForHuman && (
                   <div className="p-5 rounded-lg border border-blue-500/50 bg-blue-900/20 animate-in fade-in zoom-in duration-500 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
                     <div className="font-bold text-sm mb-3 text-blue-400 flex items-center gap-2">
@@ -312,11 +332,9 @@ export default function Home() {
                     <div className="clear-both"></div>
                   </div>
                 )}
-                
               </div>
             </div>
           )}
-
         </div>
       </div>
     </div>
