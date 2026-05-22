@@ -296,7 +296,7 @@ export default function Home() {
                   if (message.startsWith("Engineering:")) { colorClass = "text-red-400 border-red-900/50 bg-red-900/10"; badge = "Engineering"; message = message.replace("Engineering: ", ""); }
                   if (message.startsWith("Product Manager:")) { colorClass = "text-purple-400 border-purple-900/50 bg-purple-900/10"; badge = "Product Manager AI"; message = message.replace("Product Manager: ", ""); }
                   if (message.startsWith("SYSTEM:")) { colorClass = "text-yellow-400 border-yellow-900/50 font-mono text-sm"; badge = "SYSTEM"; message = message.replace("SYSTEM: ", ""); }
-                  if (message.startsWith("Human Director:")) { colorClass = "text-blue-400 border-blue-900/50 bg-blue-900/10"; badge = "👤 You (Director)"; message = message.replace("Human Director: ", ""); }
+                  if (message.startsWith("Human Director:")) { colorClass = "text-blue-400 border-blue-900/50 bg-blue-900/10"; badge = "You (Director)"; message = message.replace("Human Director: ", ""); }
 
                   return (
                     <div key={index} className={`p-5 rounded-lg border animate-in fade-in slide-in-from-bottom-2 duration-500 ${colorClass}`}>
