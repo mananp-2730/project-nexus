@@ -71,7 +71,6 @@ Start the API:
 ```bash
    uvicorn app.main:app --reload
 ```
-
 **3. Setup the Next.js Frontend**
 Open a new terminal window:
 ```bash
@@ -79,6 +78,5 @@ Open a new terminal window:
    npm install
    npm run dev
 ```
-
 **4. Open the War Room**
 Navigate to http://localhost:3000 in your browser to start a debate!
