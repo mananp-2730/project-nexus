@@ -143,7 +143,8 @@ def resume_debate(request: ResumeRequest):
                 "final_cost": final_cost,
                 "budget_saved": budget_saved
             },
-            "status": "completed"
+            "status": "completed",
+            "prd": final_state.get("prd", "")  # <-- NEW: Send the PRD back!
         }
         
     except Exception as e:
