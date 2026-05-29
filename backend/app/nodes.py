@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from .state import NexusState
+from langchain_core.prompts import ChatPromptTemplate
 
 # Force Python to read the .env file fresh
 load_dotenv(override=True)
