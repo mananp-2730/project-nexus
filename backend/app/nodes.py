@@ -58,3 +58,26 @@ def pm_agent(state: NexusState):
     """
     response = llm.invoke(prompt)
     return {"debate_log": [f"Product Manager: {response.content}"]}
+
+# --- NEW: Technical Writer Agent ---
+def tech_writer_agent(state: NexusState):
+    debate_history = "\n".join(state["debate_log"])
+    
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", """You are an elite Technical Product Manager. Your job is to read the transcript of a War Room debate and generate a structured Product Requirements Document (PRD) based strictly on the final compromise reached by the Human Director and the PM Agent.
+        
+        Output the PRD in clean Markdown format with the following sections:
+        1. Executive Summary
+        2. Scope & Features (What is in the MVP)
+        3. Out of Scope (What was cut during the debate)
+        4. Budget & Timeline
+        5. Technical Stack Recommendations
+        
+        Do not include any conversational text, just the Markdown PRD."""),
+        ("user", "Here is the War Room transcript. Generate the final PRD:\n\n{debate}")
+    ])
+    
+    chain = prompt | llm  # (Make sure 'llm' matches whatever you named your Groq model variable in this file!)
+    response = chain.invoke({"debate": debate_history})
+    
+    return {"prd": response.content}
