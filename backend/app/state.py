@@ -12,3 +12,4 @@ class NexusState(TypedDict):
     eng_approved: bool
     pm_approved: bool
     loop_count: int
+    prd: str
