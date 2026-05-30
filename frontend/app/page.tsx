@@ -25,8 +25,11 @@ export default function Home() {
   const [waitingForHuman, setWaitingForHuman] = useState(false);
   const [humanInput, setHumanInput] = useState("");
 
-  // --- NEW: RAG Upload State ---
+  // RAG State
   const [isUploading, setIsUploading] = useState(false);
+
+  // --- NEW: PRD States ---
+  const [prd, setPrd] = useState<string>("");
 
   const fetchHistory = async () => {
     try {
@@ -42,7 +45,6 @@ export default function Home() {
     fetchHistory();
   }, []);
 
-  // --- NEW: Handle PDF Upload ---
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -59,7 +61,6 @@ export default function Home() {
       const data = await response.json();
       
       if (data.extracted_text) {
-        // Drop the parsed PDF text directly into the brief!
         setBrief(data.extracted_text);
       } else {
         alert("Failed to extract text from PDF.");
@@ -79,6 +80,7 @@ export default function Home() {
     setThreadId(null);
     setWaitingForHuman(false);
     setHumanInput("");
+    setPrd(""); // Reset PRD on new debate
 
     try {
       const response = await fetch("http://localhost:8000/api/start-debate", {
@@ -121,6 +123,10 @@ export default function Home() {
         setDebate(data.debate_log);
         setIsTyping(true);
         if (data.analytics) setAnalytics(data.analytics);
+        
+        // --- NEW: Catch the generated PRD! ---
+        if (data.prd) setPrd(data.prd);
+        
         fetchHistory(); 
       }
     } catch (error) {
@@ -142,6 +148,19 @@ export default function Home() {
     });
     setIsTyping(false);
     setWaitingForHuman(false);
+    setPrd(""); // We didn't save PRDs to the DB yet, so clear it for past debates
+  };
+
+  // --- NEW: Download function for the PRD ---
+  const downloadPRD = () => {
+    if (!prd) return;
+    const blob = new Blob([prd], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Nexus_Final_PRD.md";
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   useEffect(() => {
@@ -203,8 +222,6 @@ export default function Home() {
           </div>
 
           <div className="bg-gray-900 p-6 rounded-xl border border-gray-800 shadow-xl space-y-6">
-            
-            {/* --- NEW: RAG File Uploader --- */}
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-300">Upload Client RFP (PDF)</label>
               <div className="flex items-center justify-center w-full">
@@ -262,8 +279,6 @@ export default function Home() {
             </button>
           </div>
 
-          {/* ... (The rest of the UI remains identical, with the Debate Log and Analytics cards) ... */}
-          
           {analytics && !isTyping && (
             <div className="grid grid-cols-3 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
               <div className="bg-gray-800 p-5 rounded-xl border border-gray-700 text-center shadow-lg">
@@ -292,11 +307,11 @@ export default function Home() {
                   let colorClass = "text-gray-300 border-gray-700";
                   let badge = "";
                   
-                  if (message.startsWith("Sales:")) { colorClass = "text-green-400 border-green-900/50 bg-green-900/10"; badge = "Sales"; message = message.replace("Sales: ", ""); }
-                  if (message.startsWith("Engineering:")) { colorClass = "text-red-400 border-red-900/50 bg-red-900/10"; badge = "Engineering"; message = message.replace("Engineering: ", ""); }
-                  if (message.startsWith("Product Manager:")) { colorClass = "text-purple-400 border-purple-900/50 bg-purple-900/10"; badge = "Product Manager AI"; message = message.replace("Product Manager: ", ""); }
-                  if (message.startsWith("SYSTEM:")) { colorClass = "text-yellow-400 border-yellow-900/50 font-mono text-sm"; badge = "SYSTEM"; message = message.replace("SYSTEM: ", ""); }
-                  if (message.startsWith("Human Director:")) { colorClass = "text-blue-400 border-blue-900/50 bg-blue-900/10"; badge = "You (Director)"; message = message.replace("Human Director: ", ""); }
+                  if (message.startsWith("Sales:")) { colorClass = "text-green-400 border-green-900/50 bg-green-900/10"; badge = "💼 Sales"; message = message.replace("Sales: ", ""); }
+                  if (message.startsWith("Engineering:")) { colorClass = "text-red-400 border-red-900/50 bg-red-900/10"; badge = "⚙️ Engineering"; message = message.replace("Engineering: ", ""); }
+                  if (message.startsWith("Product Manager:")) { colorClass = "text-purple-400 border-purple-900/50 bg-purple-900/10"; badge = "🎯 Product Manager AI"; message = message.replace("Product Manager: ", ""); }
+                  if (message.startsWith("SYSTEM:")) { colorClass = "text-yellow-400 border-yellow-900/50 font-mono text-sm"; badge = "🖥️ SYSTEM"; message = message.replace("SYSTEM: ", ""); }
+                  if (message.startsWith("Human Director:")) { colorClass = "text-blue-400 border-blue-900/50 bg-blue-900/10"; badge = "👤 You (Director)"; message = message.replace("Human Director: ", ""); }
 
                   return (
                     <div key={index} className={`p-5 rounded-lg border animate-in fade-in slide-in-from-bottom-2 duration-500 ${colorClass}`}>
@@ -335,6 +350,29 @@ export default function Home() {
               </div>
             </div>
           )}
+
+          {/* --- NEW: THE PRD RENDER CARD --- */}
+          {prd && !isTyping && !waitingForHuman && (
+            <div className="bg-gray-900 p-8 rounded-xl border border-gray-800 shadow-2xl space-y-6 animate-in fade-in zoom-in duration-700">
+              <div className="flex justify-between items-center border-b border-gray-800 pb-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-200">Product Requirements Document (PRD)</h2>
+                  <p className="text-sm text-gray-500 mt-1">Generated by Technical Writer Agent</p>
+                </div>
+                <button 
+                  onClick={downloadPRD} 
+                  className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors shadow-lg"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                  Export .MD
+                </button>
+              </div>
+              <div className="text-gray-300 whitespace-pre-wrap leading-relaxed font-mono text-sm bg-gray-950 p-6 rounded-lg border border-gray-800">
+                {prd}
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
     </div>
