@@ -307,7 +307,7 @@ export default function Home() {
                   let colorClass = "text-gray-300 border-gray-700";
                   let badge = "";
                   
-                  if (message.startsWith("Sales:")) { colorClass = "text-green-400 border-green-900/50 bg-green-900/10"; badge = "💼 Sales"; message = message.replace("Sales: ", ""); }
+                  if (message.startsWith("Sales:")) { colorClass = "text-green-400 border-green-900/50 bg-green-900/10"; badge = "Sales"; message = message.replace("Sales: ", ""); }
                   if (message.startsWith("Engineering:")) { colorClass = "text-red-400 border-red-900/50 bg-red-900/10"; badge = "⚙️ Engineering"; message = message.replace("Engineering: ", ""); }
                   if (message.startsWith("Product Manager:")) { colorClass = "text-purple-400 border-purple-900/50 bg-purple-900/10"; badge = "🎯 Product Manager AI"; message = message.replace("Product Manager: ", ""); }
                   if (message.startsWith("SYSTEM:")) { colorClass = "text-yellow-400 border-yellow-900/50 font-mono text-sm"; badge = "🖥️ SYSTEM"; message = message.replace("SYSTEM: ", ""); }
