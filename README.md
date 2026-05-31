@@ -32,7 +32,7 @@ This application is powered by **LangGraph** for state management and agent orch
 **Frontend (Client)**
 * **Framework:** Next.js (React)
 * **Styling:** Tailwind CSS
-* **UX:** Custom live-typing streaming effect, dynamic ROI calculation dashboard, interactive Co-Pilot console, and drag-and-drop file upload.
+* **UX:** Custom live-typing streaming effect, dynamic ROI calculation dashboard, interactive Co-Pilot console, drag-and-drop file upload, and Markdown file generation/export.
 * **Hosting:** Vercel
 
 **Backend (API, AI & Database)**
