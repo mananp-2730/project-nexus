@@ -13,6 +13,7 @@ By utilizing a state-graph architecture, Nexus creates an automated "War Room" w
 * **V1.3 - Human-in-the-Loop (HITL) Co-Pilot:** Nexus is an active Co-Pilot. The LangGraph architecture features a strategic breakpoint. After Sales and Engineering debate, the AI graph dynamically pauses, awaiting human intervention. The user steps in via a UI command console to provide strategic direction, which the AI PM then ingests to calculate a final, mathematically sound compromise.
 * **V1.4 - RAG & Document Uploads:** Nexus features a Retrieval-Augmented Generation (RAG) pipeline via Context Stuffing. Users can drag and drop PDF Request for Proposals (RFPs). The Python backend extracts the unstructured text and seamlessly injects the enterprise constraints directly into the War Room's state for the agents to analyze.
 
+
 ## The Architecture
 
 This application is powered by **LangGraph** for state management and agent orchestration, utilizing Meta's **Llama 3.3 70B** model (via Groq) for lightning-fast, highly intelligent inference.
