@@ -30,7 +30,12 @@ export default function Home() {
 
   // --- NEW: PRD States ---
   const [prd, setPrd] = useState<string>("");
-
+  // --- NEW: Global Analytics State ---
+  const [globalStats, setGlobalStats] = useState({
+    totalProjects: 0,
+    totalBudget: 0,
+    totalSaved: 0
+  });
   const fetchHistory = async () => {
     try {
       const res = await fetch("http://localhost:8000/api/history");
