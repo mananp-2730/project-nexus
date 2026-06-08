@@ -76,14 +76,14 @@ def start_debate(request: ProjectRequest):
         return {"error": str(e)}
 
 @app.get("/api/history")
-def get_history():
+async def get_history():
     try:
-        # Ask Supabase for the 10 most recent debates, sorted by newest first
-        response = supabase.table("past_debates").select("*").order("created_at", desc=True).limit(10).execute()
+        # Fetch all records, ordered by newest first
+        response = supabase.table("debates").select("*").order("created_at", desc=True).execute()
         return {"history": response.data}
     except Exception as e:
         print(f"Failed to fetch history: {e}")
-        return {"history": []}
+        return {"error": str(e)}
     
 # --- NEW: Human-in-the-Loop Resume Request ---
 class ResumeRequest(BaseModel):
