@@ -203,11 +203,27 @@ export default function Home() {
       
       {/* SIDEBAR */}
       <div className="w-80 bg-gray-900 border-r border-gray-800 flex flex-col overflow-y-auto">
-        <div className="p-6 border-b border-gray-800 sticky top-0 bg-gray-900 z-10">
-          <h2 className="text-xl font-bold text-gray-200">Past War Rooms</h2>
-          <p className="text-xs text-gray-500 mt-1">Click to review previous debates</p>
+        <div className="p-6 border-b border-gray-800 sticky top-0 bg-gray-900 z-10 space-y-4">
+          <div>
+            <h2 className="text-xl font-bold text-gray-200">Executive Portfolio</h2>
+            <p className="text-xs text-gray-500 mt-1">Global PM Analytics</p>
+          </div>
+          
+          {/* --- NEW: Global Stats Cards --- */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-gray-950 border border-gray-800 p-3 rounded-lg text-center">
+              <div className="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Total Savings</div>
+              <div className="text-lg font-bold text-green-400">${globalStats.totalSaved.toLocaleString()}</div>
+            </div>
+            <div className="bg-gray-950 border border-gray-800 p-3 rounded-lg text-center">
+              <div className="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">Total Budgets</div>
+              <div className="text-lg font-bold text-gray-300">${globalStats.totalBudget.toLocaleString()}</div>
+            </div>
+          </div>
         </div>
+        
         <div className="flex-1 p-4 space-y-3">
+          <div className="text-xs text-gray-500 uppercase tracking-wider font-bold mb-2 px-1">War Room History ({globalStats.totalProjects})</div>
           {history.map((item) => (
             <button
               key={item.id}
