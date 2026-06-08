@@ -40,7 +40,23 @@ export default function Home() {
     try {
       const res = await fetch("http://localhost:8000/api/history");
       const data = await res.json();
-      if (data.history) setHistory(data.history);
+      if (data.history) {
+        setHistory(data.history);
+        
+        // Calculate Global Metrics
+        let tBudget = 0;
+        let tSaved = 0;
+        data.history.forEach((item: any) => {
+          tBudget += item.original_budget || 0;
+          tSaved += item.budget_saved || 0;
+        });
+        
+        setGlobalStats({
+          totalProjects: data.history.length,
+          totalBudget: tBudget,
+          totalSaved: tSaved
+        });
+      }
     } catch (error) {
       console.error("Error fetching history:", error);
     }
