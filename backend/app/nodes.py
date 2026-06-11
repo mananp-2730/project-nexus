@@ -46,6 +46,17 @@ def engineering_agent(state: NexusState):
     return {"debate_log": [f"Engineering: {response.content}"]}
 
 def pm_agent(state: NexusState):
+    # 1. Conduct Live Market Research!
+    print(f"\n--- PM is searching the web for: {state['client_brief'][:30]}... ---")
+    try:
+        search_query = f"Average development cost and core features for: {state['client_brief']}"
+        market_data = web_search.invoke(search_query)
+        print("--- Web Search Complete! ---\n")
+    except Exception as e:
+        print(f"Search failed: {e}")
+        market_data = "Could not retrieve live market data. Rely on your internal knowledge."
+
+    # 2. Inject the live data into the prompt
     prompt = f"""
     You are the pragmatic Product Manager.
     Client Brief: {state['client_brief']}
@@ -54,13 +65,18 @@ def pm_agent(state: NexusState):
     Here is what Sales and Engineering just argued about:
     {state['debate_log']}
     
+    LIVE MARKET DATA (Just retrieved from the web):
+    {market_data}
+    
     Goal: Step in and make a final, realistic compromise. Tell Sales what they need to cut, and tell Engineering what they must build. 
+    Use the Live Market Data to justify your pricing and feature choices!
     
     CRITICAL INSTRUCTION: You MUST calculate a final estimated cost for your compromised MVP. 
     At the very end of your response, you must include this exact tag on a new line: "FINAL_COST: [number]"
     Example: FINAL_COST: 8500
     Do not use commas in the number.
     """
+    
     response = llm.invoke(prompt)
     return {"debate_log": [f"Product Manager: {response.content}"]}
 
