@@ -1,8 +1,9 @@
 import os
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
-from .state import NexusState
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_community.tools import DuckDuckGoSearchRun # <-- NEW
+from .state import NexusState
 
 # Force Python to read the .env file fresh
 load_dotenv(override=True)
