@@ -7,5 +7,5 @@ python-dotenv
 supabase
 pypdf
 python-multipart
-duckduckgo-search
+ddgs
 langchain-community
