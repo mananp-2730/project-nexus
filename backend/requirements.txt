@@ -8,3 +8,4 @@ supabase
 pypdf
 python-multipart
 duckduckgo-search
+langchain-community
