@@ -18,6 +18,9 @@ llm = ChatGroq(
     api_key=api_key
 )
 
+# Initialize the live web search tool
+web_search = DuckDuckGoSearchRun()
+
 def sales_agent(state: NexusState):
     prompt = f"""
     You are the Sales Lead. 
