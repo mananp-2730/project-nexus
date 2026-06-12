@@ -14,7 +14,7 @@ By utilizing a state-graph architecture, Nexus creates an automated "War Room" w
 * **V1.4 - RAG & Document Uploads:** Nexus features a Retrieval-Augmented Generation (RAG) pipeline via Context Stuffing. Users can drag and drop PDF Request for Proposals (RFPs). The Python backend extracts the unstructured text and seamlessly injects the enterprise constraints directly into the War Room's state for the agents to analyze.
 * **V2.0 - The PRD Exporter:** Nexus goes beyond orchestration to become an enterprise productivity tool. A dedicated Technical Writer Agent processes the final War Room compromise and automatically generates a highly structured Product Requirements Document (PRD). The Next.js UI renders the PRD and allows users to instantly export it as a Markdown (`.md`) file.
 * **V2.1 - Executive Portfolio Dashboard:** Nexus tracks macro-level business impact. The UI features a global analytics panel that queries the cloud database to aggregate the total capital saved, total budget processed, and overall War Room volume across all historical AI simulations.
-* **V3.0 -
+* **V3.0 - The Market Research Agent (Live Web Search):**
 
 ## The Architecture
 
