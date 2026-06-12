@@ -40,7 +40,7 @@ This application is powered by **LangGraph** for state management and agent orch
 **Backend (API, AI & Database)**
 * **Framework:** Python, FastAPI, Uvicorn
 * **AI Orchestration:** LangGraph, LangChain
-* **Agentic Tool Use:**
+* **Agentic Tool Use:** DuckDuckGo Search API
 * **LLM Engine:** Llama 3.3 70B (via Groq API)
 * **Data Extraction:** PyPDF, python-multipart
 * **Database:** Supabase (PostgreSQL)
