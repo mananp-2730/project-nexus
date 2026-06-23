@@ -74,6 +74,7 @@ Start the API:
 ```bash
    uvicorn app.main:app --reload
 ```
+
 **3. Setup the Next.js Frontend**
 Open a new terminal window:
 ```bash
