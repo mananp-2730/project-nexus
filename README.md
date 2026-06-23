@@ -82,5 +82,6 @@ Open a new terminal window:
    npm install
    npm run dev
 ```
+
 **4. Open the War Room**
 Navigate to http://localhost:3000 in your browser to start a debate!
