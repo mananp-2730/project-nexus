@@ -61,6 +61,7 @@ Want to run the War Room locally? Follow these steps:
 ```bash
    git clone [https://github.com/mananp-2730/project-nexus.git](https://github.com/mananp-2730/project-nexus.git)```
 ```
+
 **2. Setup the Python Backend**
 ```bash
    cd project-nexus/backend
