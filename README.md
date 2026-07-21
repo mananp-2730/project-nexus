@@ -78,6 +78,7 @@ Create a .env file in the backend directory and add your Groq API key:
    SUPABASE_URL="your_supabase_project_url"
    SUPABASE_KEY="your_supabase_anon_public_key"
 ```
+
 Start the API:
 ```bash
    uvicorn app.main:app --reload
