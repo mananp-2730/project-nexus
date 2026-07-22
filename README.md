@@ -21,7 +21,6 @@ By utilizing a state-graph architecture, Nexus creates an automated "War Room" w
 * **V2.1 - Executive Portfolio Dashboard:** Nexus tracks macro-level business impact. The UI features a global analytics panel that queries the cloud database to aggregate the total capital saved, total budget processed, and overall War Room volume across all historical AI simulations.
 * **V3.0 - The Market Research Agent (Live Web Search):** Nexus features autonomous Agentic Tool Use. Before calculating a compromise, the PM Agent secretly queries the live internet (via DuckDuckGo) to pull real-world competitor pricing, market trends, and standard feature sets, ensuring the final PRD is grounded in hard, current market data.
 
-
 ## The Architecture
 
 
