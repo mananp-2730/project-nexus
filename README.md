@@ -39,6 +39,7 @@ This application is powered by **LangGraph** for state management and agent orch
 
 ## Tech Stack
 
+
 **Frontend (Client)**
 * **Framework:** Next.js (React)
 * **Styling:** Tailwind CSS
