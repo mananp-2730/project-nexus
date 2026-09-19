@@ -46,7 +46,6 @@ This application is powered by **LangGraph** for state management and agent orch
 * **Database:** Supabase (PostgreSQL)
 * **Hosting:** Render
 
-
 ## Local Setup & Installation
 
 Want to run the War Room locally? Follow these steps:
