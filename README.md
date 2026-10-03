@@ -18,7 +18,6 @@ By utilizing a state-graph architecture, Nexus creates an automated "War Room" w
 
 ## The Architecture
 
-
 This application is powered by **LangGraph** for state management and agent orchestration, utilizing Meta's **Llama 3.3 70B** model (via Groq) for lightning-fast, highly intelligent inference.
 
 
