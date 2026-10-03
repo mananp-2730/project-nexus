@@ -8,7 +8,6 @@ By utilizing a state-graph architecture, Nexus creates an automated "War Room" w
 
 ## Evolution & Features
 
-
 * **V1.1 - The Analytics Engine:** A custom extraction pipeline forces the AI PM to quantify decisions. The system intercepts the output, calculates the budget delta, and displays a real-time ROI dashboard.
 * **V1.2 - The Memory Engine:** Integrated with a cloud PostgreSQL database (Supabase), the backend automatically logs every session. The Next.js frontend features a sidebar dashboard to fetch and review historical debates instantly.
 * **V1.3 - Human-in-the-Loop (HITL) Co-Pilot:** Nexus is an active Co-Pilot. The LangGraph architecture features a strategic breakpoint. After Sales and Engineering debate, the AI graph dynamically pauses, awaiting human intervention. The user steps in via a UI command console to provide strategic direction, which the AI PM then ingests to calculate a final, mathematically sound compromise.
