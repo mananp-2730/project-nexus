@@ -37,6 +37,7 @@ This application is powered by **LangGraph** for state management and agent orch
 * **The Technical Writer Agent:** The documentation specialist. It reads the finalized debate log and translates the PM's compromise into a structured PRD (Executive Summary, Scope, Exclusions, and Financials).
 * **The Data Extractor & Database:** A Python pipeline that intercepts the PM's final output, isolates cost metrics, and pushes the entire session to a Supabase PostgreSQL database.
 
+
 ## Tech Stack
 
 **Frontend (Client)**
