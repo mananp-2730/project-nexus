@@ -47,6 +47,7 @@ This application is powered by **LangGraph** for state management and agent orch
 * **UX:** Custom live-typing streaming effect, dynamic ROI calculation dashboard, global executive analytics panel, interactive Co-Pilot console, drag-and-drop file upload, and Markdown file generation/export.
 * **Hosting:** Vercel
 
+
 **Backend (API, AI & Database)**
 * **Framework:** Python, FastAPI, Uvicorn
 * **AI Orchestration:** LangGraph, LangChain
