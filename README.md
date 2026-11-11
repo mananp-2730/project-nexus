@@ -1,6 +1,5 @@
 # Project Nexus: The AI War Room
 
-
 **Live Demo:** [project-nexus-khaki-mu.vercel.app](https://project-nexus-khaki-mu.vercel.app/) *(Note: The backend is hosted on a free Render tier. If it has been asleep, the first debate may take ~45 seconds to wake the server up!)*
 
 
