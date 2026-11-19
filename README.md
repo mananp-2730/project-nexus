@@ -3,7 +3,6 @@
 **Run this workflow directly in your IDE** 
 You can now run the Project Nexus multi-agent scoping war room (Sales vs. Engineering vs. PM) directly inside Cursor, Claude Code, or Codex without cloning the repo. 
 
-
 **[Get the $9 Skill on Agensi](https://www.agensi.io/skills/project-nexus-multi-agent-scoping)**
 
 
