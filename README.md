@@ -6,6 +6,7 @@
 
 You can now run the Project Nexus multi-agent scoping war room (Sales vs. Engineering vs. PM) directly inside Cursor, Claude Code, or Codex without cloning the repo. 
 
+
 **[Get the $9 Skill on Agensi](https://www.agensi.io/skills/project-nexus-multi-agent-scoping)**
 
 Project Nexus is a full-stack, multi-agent AI orchestrator designed to solve a classic business problem: the chaotic disconnect between Sales and Engineering.
