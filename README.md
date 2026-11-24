@@ -1,5 +1,6 @@
 # Project Nexus: The AI War Room
 
+
 **Run this workflow directly in your IDE** 
 
 You can now run the Project Nexus multi-agent scoping war room (Sales vs. Engineering vs. PM) directly inside Cursor, Claude Code, or Codex without cloning the repo. 
