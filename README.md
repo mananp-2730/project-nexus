@@ -6,7 +6,6 @@ You can now run the Project Nexus multi-agent scoping war room (Sales vs. Engine
 
 **[Get the Skill on Agensi](https://www.agensi.io/skills/project-nexus-multi-agent-scoping)**
 
-
 Project Nexus is a full-stack, multi-agent AI orchestrator designed to solve a classic business problem: the chaotic disconnect between Sales and Engineering.
 
 
